@@ -18,6 +18,7 @@ uint8_t valorSPI	=0;
 uint8_t valorSPI2	=0;
 uint8_t entero=0;
 uint8_t decimal=0;
+volatile uint8_t caracter=0; 
 
 
 //PROTOTIPOS DE FUNCIÓN:
@@ -52,21 +53,15 @@ int main(void)
 		PORTB &= ~(1<<PORTB2);	//Slave select=0;
 		
 		SPI_WRITE(0);
-		//SPI_WRITE(0x00);
-		
 		valorSPI=SPI_READ();	//Lee la información del SPI
 		
 		
-		
-		PORTC|= (1<<PORTC0);	//Slave select = 1
-		
 		SPI_WRITE(1);
-		
-		//SPI_WRITE(0x00);
 		valorSPI2=SPI_READ();	//Lee la información del SPI
-		//RefreshPORT(valorSPI2);	//Una vez leído, lo carga al puerto
 		
 		SPI_WRITE(caracter);
+		SPI_READ();   // descarto el dato
+		
 		PORTB|= (1<<PORTB2);	//Slave select = 1
 		
 		
@@ -101,7 +96,7 @@ void decimales(uint8_t VOLTAJE){
 }
 
 ISR (USART_RX_vect){
-	uint8_t caracter = UDR0;
+	caracter = UDR0;
 	//WriteChar(caracter);	//Envía de vuelta el mismo carácter resibido	
 	RefreshPORT(caracter);
 

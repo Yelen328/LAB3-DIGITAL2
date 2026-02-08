@@ -57,8 +57,7 @@ int main(void)
 		valorSPI=SPI_READ();	//Lee la información del SPI
 		
 		
-		//_delay_us(10);  // Pequeña pausa para sincronización
-		//RefreshPORT(valorSPI);	//Una vez leído, lo carga al puerto
+		
 		PORTC|= (1<<PORTC0);	//Slave select = 1
 		
 		SPI_WRITE(1);
@@ -66,6 +65,8 @@ int main(void)
 		//SPI_WRITE(0x00);
 		valorSPI2=SPI_READ();	//Lee la información del SPI
 		//RefreshPORT(valorSPI2);	//Una vez leído, lo carga al puerto
+		
+		SPI_WRITE(caracter);
 		PORTB|= (1<<PORTB2);	//Slave select = 1
 		
 		
@@ -78,6 +79,9 @@ int main(void)
 		decimales(valorSPI2);
 		sprintf(buffer, "S2: %d.%02dV\r\n", entero, decimal);
 		writeString(buffer);
+		
+		
+		
 		_delay_ms(250);
 		
     }
@@ -94,4 +98,11 @@ void decimales(uint8_t VOLTAJE){
 	entero = (uint8_t)conversion;
 	float parte_decimal = conversion - (float)entero;
 	decimal = (uint8_t)(parte_decimal * 100.0f);
+}
+
+ISR (USART_RX_vect){
+	uint8_t caracter = UDR0;
+	//WriteChar(caracter);	//Envía de vuelta el mismo carácter resibido	
+	RefreshPORT(caracter);
+
 }
